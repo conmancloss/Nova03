@@ -80,3 +80,4 @@ Edit `public/games.json`:
 
 > Nova is intended for educational use. Use responsibly.
 # Nova03
+# Nova03
