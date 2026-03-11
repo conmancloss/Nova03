@@ -562,7 +562,12 @@
             if (e.target.state === 'activated') { sw.removeEventListener('statechange', handler); resolve(); }
           });
         });
-        console.log('[Nova] 5: calling init()');
+        console.log('[Nova] 5: setting up bare-mux');
+        const { DD: BareMuxConnection } = $scramjetLoadWorker();
+        const conn = new BareMuxConnection('/bare-mux-worker.js');
+        await conn.setTransport('/wisp-transport.mjs', [window.__nova__wispUrl]);
+        console.log('[Nova] 5b: transport set');
+        console.log('[Nova] 6: calling init()');
         await window.__scramjet__controller.init();
         console.log('[Nova] 6: done!');
       } catch (e) {
