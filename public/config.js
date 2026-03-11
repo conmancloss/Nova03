@@ -1,7 +1,5 @@
 const WISP_URL = (location.protocol === 'https:' ? 'wss' : 'ws') + '://wisp.mercurywork.shop/';
-
 const { ScramjetController } = $scramjetLoadController();
-
 window.__scramjet__controller = new ScramjetController({
   prefix: '/scramjet-prefix/',
   files: {
@@ -10,16 +8,9 @@ window.__scramjet__controller = new ScramjetController({
     sync: '/scramjet/scramjet.sync.js',
   },
   codec: {
-    encode: (url) => (url ? encodeURIComponent(url) : url),
-    decode: (url) => (url ? decodeURIComponent(url) : url),
+    encode: (url) => url ? encodeURIComponent(url) : url,
+    decode: (url) => url ? decodeURIComponent(url) : url,
   },
-  flags: {
-    strictRewrites: true,
-    captureErrors: true,
-    cleanErrors: true,
-    allowInvalidJs: true,
-    allowFailedIntercepts: true,
-  },
+  flags: { serviceworkers: false, syncxhr: false, rewriterLogs: false, captureErrors: true, cleanErrors: true, sourcemaps: false, allowInvalidJs: true, allowFailedIntercepts: true },
 });
-
 window.__scramjet__controller.wisp = WISP_URL;
