@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070a0f;
+      --surface: #0d1117;
+      --border: #1c2333;
+      --accent: #58a6ff;
+      --accent2: #bc8cff;
+      --text: #e6edf3;
+      --muted: #7d8590;
+      --glow: rgba(88, 166, 255, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Stars background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 40% 30%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 55% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 80% 50%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 35% 45%, rgba(255,255,255,0.2) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 32px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    nav {
+      display: flex;
+      gap: 4px;
+    }
+
+    nav button {
+      background: none;
+      border: 1px solid transparent;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 14px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    nav button:hover, nav button.active {
+      color: var(--text);
+      border-color: var(--border);
+      background: var(--surface);
+    }
+
+    nav button.active {
+      color: var(--accent);
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 64px 0 40px;
+    }
+
+    .hero h1 {
+      font-size: clamp(36px, 6vw, 56px);
+      font-weight: 600;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--text) 40%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 300;
+    }
+
+    /* Search bar */
+    .search-wrap {
+      position: relative;
+      margin: 0 auto 48px;
+      max-width: 620px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 56px 16px 20px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .search-wrap input::placeholder { color: var(--muted); }
+
+    .search-wrap input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--glow);
+    }
+
+    .search-wrap button {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: var(--bg);
+      width: 36px;
+      height: 36px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: opacity 0.15s;
+    }
+
+    .search-wrap button:hover { opacity: 0.85; }
+
+    /* Status pill */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 48px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #3fb950;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* Sections */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* Tab pages */
+    .tab-page { display: none; }
+    .tab-page.active { display: block; }
+
+    /* Games grid */
+    #games-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+
+    .game-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.15s;
+      text-decoration: none;
+    }
+
+    .game-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .game-img {
+      width: 100%;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+      background: var(--border);
+      display: block;
+    }
+
+    .game-img-placeholder {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, var(--border), #1a2233);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .game-info {
+      padding: 8px 10px;
+    }
+
+    .game-name {
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Proxy iframe overlay */
+    #proxy-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--bg);
+      flex-direction: column;
+    }
+
+    #proxy-overlay.open { display: flex; }
+
+    .proxy-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .proxy-url {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .proxy-url:focus { border-color: var(--accent); }
+
+    .proxy-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: inherit;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .proxy-btn:hover { color: var(--text); }
+
+    .proxy-btn.close-btn { color: #f85149; }
+    .proxy-btn.close-btn:hover { color: #ff6b6b; border-color: #f85149; }
+
+    #proxy-frame {
+      flex: 1;
+      border: none;
+      width: 100%;
+    }
+
+    /* Loading spinner */
+    .loading {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 48px;
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-msg {
+      background: rgba(248,81,73,0.1);
+      border: 1px solid rgba(248,81,73,0.3);
+      border-radius: 8px;
+      padding: 14px 16px;
+      color: #f85149;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">✦</div>
+        Nova
+      </div>
+      <nav>
+        <button class="active" onclick="setTab('browse', this)">Browse</button>
+        <button onclick="setTab('games', this)">Games</button>
+      </nav>
+    </header>
+
+    <div class="tab-page active" id="tab-browse">
+      <div class="hero">
+        <h1>Browse Freely</h1>
+        <p>Powered by Scramjet — fast, reliable, unrestricted.</p>
+      </div>
+
+      <div style="text-align:center">
+        <div class="status">
+          <div class="status-dot"></div>
+          Proxy online · Scramjet 2.0-alpha
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <input id="url-input" type="text" placeholder="Enter a URL or search..." autocomplete="off" autocorrect="off" spellcheck="false" />
+        <button onclick="navigate()">→</button>
+      </div>
+      <div class="error-msg" id="error-msg"></div>
+    </div>
+
+    <div class="tab-page" id="tab-games">
+      <div style="padding-top: 40px;"></div>
+      <div class="section-header">
+        <span class="section-title">Games</span>
+        <span class="status-dot" style="background:#3fb950;width:6px;height:6px;border-radius:50%;display:inline-block;"></span>
+      </div>
+      <div id="games-container">
+        <div class="loading"><div class="spinner"></div> Loading games...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Proxy overlay -->
+  <div id="proxy-overlay">
+    <div class="proxy-bar">
+      <button class="proxy-btn" onclick="proxyBack()">←</button>
+      <button class="proxy-btn" onclick="proxyForward()">→</button>
+      <button class="proxy-btn" onclick="proxyReload()">↺</button>
+      <input class="proxy-url" id="proxy-url-bar" type="text" spellcheck="false" />
+      <button class="proxy-btn" onclick="proxyGo()">Go</button>
+      <button class="proxy-btn close-btn" onclick="closeProxy()">✕ Close</button>
+    </div>
+    <iframe id="proxy-frame" title="Proxy"></iframe>
+  </div>
+
+  <script src="/scramjet/scramjet.bundle.js"></script>
+  <script src="/config.js"></script>
+  <script>
+    // ─── Tab switching ───────────────────────────────────────────────────────
+    function setTab(name, btn) {
+      document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+      document.getElementById('tab-' + name).classList.add('active');
+      btn.classList.add('active');
+      if (name === 'games') loadGames();
+    }
+
+    // ─── URL input enter key ─────────────────────────────────────────────────
+    document.getElementById('url-input').addEventListener('keydown', e => {
+      if (e.key === 'Enter') navigate();
+    });
+
+    document.getElementById('proxy-url-bar').addEventListener('keydown', e => {
+      if (e.key === 'Enter') proxyGo();
+    });
+
+    // ─── Navigation ──────────────────────────────────────────────────────────
+    function resolveUrl(raw) {
+      raw = raw.trim();
+      if (!raw) return null;
+      // If it looks like a URL
+      if (/^https?:\/\//i.test(raw)) return raw;
+      if (/^[a-z0-9-]+\.[a-z]{2,}/i.test(raw) && !raw.includes(' ')) return 'https://' + raw;
+      // Otherwise search
+      return 'https://www.google.com/search?q=' + encodeURIComponent(raw);
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 5000);
+    }
+
+    async function navigate(rawUrl) {
+      const input = document.getElementById('url-input');
+      rawUrl = rawUrl || input.value;
+      const url = resolveUrl(rawUrl);
+      if (!url) return;
+      openProxy(url);
+    }
+
+    function openProxy(url) {
+      const overlay = document.getElementById('proxy-overlay');
+      const frame = document.getElementById('proxy-frame');
+      const bar = document.getElementById('proxy-url-bar');
+      bar.value = url;
+
+      try {
+        const encoded = __scramjet__controller.encodeUrl(url);
+        frame.src = encoded;
+        overlay.classList.add('open');
+      } catch (e) {
+        showError('Failed to load proxy: ' + e.message);
+      }
+    }
+
+    function closeProxy() {
+      document.getElementById('proxy-overlay').classList.remove('open');
+      document.getElementById('proxy-frame').src = 'about:blank';
+    }
+
+    function proxyBack() { document.getElementById('proxy-frame').contentWindow?.history.back(); }
+    function proxyForward() { document.getElementById('proxy-frame').contentWindow?.history.forward(); }
+    function proxyReload() { document.getElementById('proxy-frame').contentWindow?.location.reload(); }
+    function proxyGo() { openProxy(document.getElementById('proxy-url-bar').value); }
+
+    // ─── Games ───────────────────────────────────────────────────────────────
+    let gamesLoaded = false;
+    async function loadGames() {
+      if (gamesLoaded) return;
+      gamesLoaded = true;
+      const container = document.getElementById('games-container');
+      try {
+        const res = await fetch('/games.json');
+        const games = await res.json();
+        container.innerHTML = '';
+        games.forEach(game => {
+          const card = document.createElement('div');
+          card.className = 'game-card';
+          card.onclick = () => openProxy(game.url);
+          const imgHtml = game.image
+            ? `<img class="game-img" src="${game.image}" alt="${game.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : '';
+          const placeholderStyle = game.image ? 'display:none' : '';
+          card.innerHTML = `
+            ${imgHtml}
+            <div class="game-img-placeholder" style="${placeholderStyle}">🎮</div>
+            <div class="game-info"><div class="game-name">${game.name}</div></div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        container.innerHTML = '<div style="color:var(--muted);font-size:13px;padding:16px;">Could not load games.</div>';
+      }
+    }
+
+    // ─── Service worker registration ─────────────────────────────────────────
+    (async () => {
+      if (!navigator.serviceWorker) {
+        showError('Service workers are not supported in this browser.');
+        return;
+      }
+      try {
+        await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        await __scramjet__controller.init();
+      } catch (e) {
+        showError('Proxy init failed: ' + e.message + '. Try a different browser or clear site data.');
+      }
+    })();
+  </script>
+</body>
+</html>
