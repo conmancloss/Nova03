@@ -8,6 +8,15 @@ importScripts('/scramjet/scramjet.all.js');
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const sw = new ScramjetServiceWorker();
+
 self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', e => e.waitUntil(clients.claim()));
-self.addEventListener('fetch', e => { if (sw.route(e)) e.respondWith(sw.fetch(e)); });
+
+self.addEventListener('fetch', async e => {
+  if (!sw.config) {
+    try { await sw.loadConfig(); } catch(_) {}
+  }
+  if (sw.config && sw.route(e)) {
+    e.respondWith(sw.fetch(e));
+  }
+});
