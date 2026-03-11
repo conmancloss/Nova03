@@ -544,6 +544,16 @@
       });
     }
 
+    window.__bareMuxWorkerPath = '/bare-mux-worker.js';
+    window.addEventListener('message', e => {
+      if (e.data?.type === 'getPort' && e.ports?.[0]) {
+        console.log('[Nova] SW requested bare-mux port');
+        const w = new SharedWorker(window.__bareMuxWorkerPath, {name:'bare-mux-worker'});
+        w.port.start();
+        e.ports[0].postMessage(w.port, [w.port]);
+      }
+    });
+
     (async () => {
       try {
         console.log('[Nova] 1: loading all.js');
@@ -591,7 +601,19 @@
         console.log("[Nova] 5: setting up bare-mux");
         await setupBareMux("/bare-mux-worker.js","/wisp-transport.mjs",[window.__nova__wispUrl]);
         console.log("[Nova] 5b: bare-mux ready");
-        console.log('[Nova] 6: calling init()');
+        console.log('[Nova] 6: clearing old IDB and calling init()');
+        await new Promise(res => {
+          const req = indexedDB.open('$scramjet', 1);
+          req.onsuccess = e => {
+            const db = e.target.result;
+            const needed = ['config','cookies','redirectTrackers','referrerPolicies','publicSuffixList'];
+            const missing = needed.some(s => !db.objectStoreNames.contains(s));
+            db.close();
+            if (missing) { console.log('[Nova] deleting old IDB'); indexedDB.deleteDatabase('$scramjet').onsuccess = res; }
+            else res();
+          };
+          req.onerror = res;
+        });
         await window.__scramjet__controller.init();
         console.log('[Nova] 6: done!');
       } catch (e) {
