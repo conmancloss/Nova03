@@ -536,15 +536,29 @@
 
     // ─── Service worker registration ─────────────────────────────────────────
     (async () => {
-      if (!navigator.serviceWorker) {
-        showError('Service workers are not supported in this browser.');
-        return;
-      }
       try {
-        await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-        await __scramjet__controller.init();
+        console.log('[Nova] 1: loading all.js');
+        await loadScript('/scramjet/scramjet.all.js');
+        console.log('[Nova] 2: all.js done, loadController=', typeof $scramjetLoadController);
+        await loadScript('/config.js');
+        console.log('[Nova] 3: config done, controller=', typeof window.__scramjet__controller);
+        if (!navigator.serviceWorker) { showError('No SW support'); return; }
+        const reg = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        console.log('[Nova] 4: SW registered');
+        await new Promise((resolve) => {
+          if (reg.active && !reg.installing && !reg.waiting) { console.log('[Nova] SW already active'); return resolve(); }
+          const sw = reg.installing || reg.waiting || reg.active;
+          sw.addEventListener('statechange', function handler(e) {
+            console.log('[Nova] SW state ->', e.target.state);
+            if (e.target.state === 'activated') { sw.removeEventListener('statechange', handler); resolve(); }
+          });
+        });
+        console.log('[Nova] 5: calling init()');
+        await window.__scramjet__controller.init();
+        console.log('[Nova] 6: done!');
       } catch (e) {
-        showError('Proxy init failed: ' + e.message + '. Try a different browser or clear site data.');
+        showError('Proxy init failed: ' + e.message);
+        console.error('[Nova] FULL ERROR:', e.stack || e);
       }
     })();
   </script>
