@@ -1,16 +1,14 @@
 try {
-  if (typeof navigator !== 'undefined') {
-    Object.defineProperty(navigator, 'serviceWorker', {
-      get: () => undefined,
-      configurable: true
-    });
-  }
+  Object.defineProperty(navigator, 'serviceWorker', {
+    get: () => undefined,
+    configurable: true
+  });
 } catch(e) {}
 
 if (typeof self.SharedWorker === 'undefined') self.SharedWorker = function(){};
 if (typeof self.localStorage === 'undefined') self.localStorage = {};
 
-importScripts('/scramjet/scramjet.bundle.js');
+importScripts('/scramjet/scramjet.all.js');
 
 const { ScramjetServiceWorker } = $scramjetLoadWorker();
 const sw = new ScramjetServiceWorker();
