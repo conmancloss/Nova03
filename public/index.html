@@ -580,10 +580,11 @@
             worker.port.postMessage({message:{type:"set",client:{function:fn,args:args||[]}},port:port2},[port2]);
           });
           window.addEventListener("message", e => {
-            if (e.data?.type==="getPort" && e.data.port) {
+            if (e.data?.type==="getPort" && e.ports?.[0]) {
+              console.log("[Nova] SW requested port");
               const w2 = new SharedWorker(workerPath,{name:"bare-mux-worker"});
               w2.port.start();
-              e.data.port.postMessage(w2.port,[w2.port]);
+              e.ports[0].postMessage(w2.port,[w2.port]);
             }
           });
         }
