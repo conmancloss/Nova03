@@ -1,7 +1,7 @@
 // Nova Service Worker
 importScripts('/scramjet/scramjet.bundle.js');
 
-const { ScramjetServiceWorker } = $scramjetLoadController();
+const { ScramjetServiceWorker } = $scramjetLoadWorker();
 
 const sw = new ScramjetServiceWorker();
 
@@ -9,7 +9,7 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener('fetch', (e) => {
-  if (sw.shouldRoute(e)) {
-    e.respondWith(sw.handleFetch(e));
+  if (sw.route(e)) {
+    e.respondWith(sw.fetch(e));
   }
 });
