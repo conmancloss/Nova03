@@ -579,7 +579,7 @@
             setTimeout(() => rej(new Error("set timeout")), 10000);
             worker.port.postMessage({message:{type:"set",client:{function:fn,args:args||[]}},port:port2},[port2]);
           });
-          navigator.serviceWorker.addEventListener("message", e => {
+          window.addEventListener("message", e => {
             if (e.data?.type==="getPort" && e.data.port) {
               const w2 = new SharedWorker(workerPath,{name:"bare-mux-worker"});
               w2.port.start();
