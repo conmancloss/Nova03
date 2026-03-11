@@ -563,10 +563,33 @@
           });
         });
         console.log('[Nova] 5: setting up bare-mux');
-        const { DD: BareMuxConnection } = $scramjetLoadWorker();
-        const conn = new BareMuxConnection('/bare-mux-worker.js');
-        await conn.setTransport('/wisp-transport.mjs', [window.__nova__wispUrl]);
-        console.log('[Nova] 5b: transport set');
+        async function setupBareMux(workerPath, transportUrl, args) {
+          const worker = new SharedWorker(workerPath, {name:'bare-mux-worker'});
+          worker.port.start();
+          await new Promise((res,rej) => {
+            const {port1,port2} = new MessageChannel();
+            port1.onmessage = e => e.data.type==="pong" ? res() : rej(new Error("no pong"));
+            setTimeout(() => rej(new Error("ping timeout")), 3000);
+            worker.port.postMessage({message:{type:"ping"},port:port2},[port2]);
+          });
+          const fn = 'const{default:T}=await import("'+transportUrl+'");return[T,"'+transportUrl+'"];';
+          await new Promise((res,rej) => {
+            const {port1,port2} = new MessageChannel();
+            port1.onmessage = e => e.data.type==="set" ? res() : rej(new Error(e.data.error?.message||"set failed"));
+            setTimeout(() => rej(new Error("set timeout")), 10000);
+            worker.port.postMessage({message:{type:"set",client:{function:fn,args:args||[]}},port:port2},[port2]);
+          });
+          navigator.serviceWorker.addEventListener("message", e => {
+            if (e.data?.type==="getPort" && e.data.port) {
+              const w2 = new SharedWorker(workerPath,{name:"bare-mux-worker"});
+              w2.port.start();
+              e.data.port.postMessage(w2.port,[w2.port]);
+            }
+          });
+        }
+        console.log("[Nova] 5: setting up bare-mux");
+        await setupBareMux("/bare-mux-worker.js","/wisp-transport.mjs",[window.__nova__wispUrl]);
+        console.log("[Nova] 5b: bare-mux ready");
         console.log('[Nova] 6: calling init()');
         await window.__scramjet__controller.init();
         console.log('[Nova] 6: done!');
